@@ -1,1 +1,4 @@
+# Ignore .env files in the root, client, and server directories
 .env
+client/.env
+server/.env
