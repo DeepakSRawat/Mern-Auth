@@ -8,7 +8,7 @@ import userRouter from "./routes/userRouter.js";
 
 const app = express();
 const port = 4000;
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = process.env.BACKEND_URL;
 
 mongodb();
 app.use(express.json());
