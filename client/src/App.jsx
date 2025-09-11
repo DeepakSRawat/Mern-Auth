@@ -1,9 +1,10 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Home from "./Pages/Home";
-import Login from "./Pages/Login";
-import EmailVerify from "./Pages/EmailVerify";
-import ResetPassWord from "./Pages/ResetPassWord";
+import Home from "./Pages/Home.jsx";
+import Login from "./Pages/Login.jsx";
+import EmailVerify from "./Pages/EmailVerify.jsx";
+import ResetPassword from "./Pages/ResetPassword.jsx";
+
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
@@ -14,7 +15,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/email-verify" element={<EmailVerify />} />
-        <Route path="/reset-password" element={<ResetPassWord />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </div>
   );
