@@ -287,7 +287,7 @@ export const WELCOME_USER = `
               <tr>
                 <td align="center" class="esd-block-text es-p5t es-p15b es-p15r es-p15l">
   <p style="line-height:150%">
-    Welcome to mern auth practice , {{user}}. You can now login with your email and password
+    Welcome to mern auth practice, {{user}}. You can now login with your email and password
   </p>
 </td>
               </tr>

@@ -7,6 +7,8 @@ import {
   PASSWORD_RESET_TEMPLATE,
   WELCOME_USER,
 } from "../config/emailTemplates.js";
+import {SendSmtpEmail} from "@getbrevo/brevo"
+import { emailAPI } from "../config/brevoEmail.js";
 
 const SiteName = "mern auth practice";
 
@@ -40,14 +42,24 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const mailData = {
-      from: process.env.SENDER_EMAIL_ID,
-      to: email,
-      subject: `Welcome to ${SiteName}`,
-      html: WELCOME_USER.replace("{{user}}", user.name),
-    };
+    // smtp method to send mail
+    // const mailData = {
+    //   from: process.env.SENDER_EMAIL_ID,
+    //   to: email,
+    //   subject: `Welcome to ${SiteName}`,
+    //   html: WELCOME_USER.replace("{{user}}", user.name),
+    // };
 
-    await transporter.sendMail(mailData);
+    // await transporter.sendMail(mailData);
+
+    // sdk method to send mail
+    const message = new SendSmtpEmail();
+    message.subject =`Welcome to ${SiteName}`;
+    message.htmlContent = WELCOME_USER.replace("{{user}}", user.name)
+    message.sender = { name: process.env.SENDER_NAME, email:process.env.SENDER_EMAIL_ID};
+    message.to = [{ email: user.email, name: user.name }];
+
+    emailAPI.sendTransacEmail(message)
 
     res.json({ success: true, message: "User registered successfully" });
   } catch (error) {
@@ -126,17 +138,21 @@ export const sendOtp = async (req, res) => {
     user.verifiedOTPExpiresAt = Date.now() + 24 * 60 * 1000;
     await user.save();
 
-    const mailData = {
-      from: process.env.SENDER_EMAIL_ID,
-      to: user.email,
-      subject: "user OTP Verification",
-      html: EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
+    const message = new SendSmtpEmail();
+    message.subject = "user OTP Verification";
+    message.htmlContent = EMAIL_VERIFY_TEMPLATE.replace("{{otp}}", otp).replace(
         "{{email}}",
         user.email
-      ),
-    };
+      );
+    message.sender = { name: process.env.SENDER_NAME, email:process.env.SENDER_EMAIL_ID};
+    message.to = [{ email: user.email, name: user.name }];
 
-    await transporter.sendMail(mailData);
+    emailAPI.sendTransacEmail(message).then(result => {
+    console.log(JSON.stringify(result.body));
+    }).catch(err => {
+        console.error("Error at sending otp email:", err.body);
+    });
+
     return res.json({
       success: true,
       message: "user verify otp is send successfully",
@@ -197,18 +213,16 @@ export const sendResetOTP = async (req, res) => {
     user.resetOTP = otp;
     user.resetOTPExpiresAt = Date.now() + 15 * 60 * 1000;
     await user.save();
-    // console.log("user: ", user);
-
-    const mailData = {
-      from: process.env.SENDER_EMAIL_ID,
-      to: user.email,
-      subject: "user OTP Verification",
-      html: PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
+    const message = new SendSmtpEmail();
+    message.subject = "user OTP Verification";
+    message.htmlContent = PASSWORD_RESET_TEMPLATE.replace("{{otp}}", otp).replace(
         "{{email}}",
         user.email
-      ),
-    };
-    await transporter.sendMail(mailData);
+      )
+    message.sender = { name: process.env.SENDER_NAME, email:process.env.SENDER_EMAIL_ID};
+    message.to = [{ email: user.email, name: user.name }];
+
+    emailAPI.sendTransacEmail(message);
 
     return res.json({
       success: true,
